@@ -3,7 +3,7 @@
 static $all_empolyees;
 /*hook_init*/
 function empolyee_init(){
-	drupal_set_message("Welcome in Drupal Modules");
+//	drupal_set_message("Welcome in Drupal Modules");
 }
 function get_All_Empolyess(){
 	return $result = Database::getConnection()->query("SELECT * FROM {node}");
@@ -36,17 +36,21 @@ function empolyee_showempolyees(){
 						ON n.nid = j.entity_id
 						INNER JOIN field_data_field_age as a
 						ON j.entity_id = a.entity_id");
+	if($result->rowCount()>0){
 
-	$header = array("Name","Job","Age");
-	foreach ($result as $res){
-		$rows [] =array(
-			$res->title,
-			$res->field_job_value,
-			$res->field_age_value
-		);
+		$header = array("Name","Job","Age");
+		foreach ($result as $res){
+			$rows [] =array(
+				$res->title,
+				$res->field_job_value,
+				$res->field_age_value
+			);
+		}
+		$output = theme('table',array('header'=>$header,'rows'=>$rows));
+		echo $output;
+	}else{
+		drupal_set_message("No Empolyees in your Company");
 	}
-	$output = theme('table',array('header'=>$header,'rows'=>$rows));
-	return $output;
 }
 //function empolyee_ajaxCallHandler(){
 //	echo "arrived Heree";
