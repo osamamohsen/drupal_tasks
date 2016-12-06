@@ -1,0 +1,80 @@
+<?php
+
+/*hook_init*/
+function hello_init(){
+	//drupal_set_message("Welcome in Drupal Modules");
+}
+
+/*hook_menu*/
+function hello_menu(){
+	$items = array();
+//	http://localhost/drupal-7.52/?q=hellopage
+	$items['hellopage'] = array(
+		'title' => 'my Hello Page',
+		'description' => 'Description of Hello Page',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('hello_showHelloForm'),
+		'access callback' => 'user_access',
+		'access arguments' => array('access content'),
+		'type' => MENU_NORMAL_ITEM 
+	);
+
+//	http://localhost/drupal-7.52/?q=gethello
+	$items['gethello'] = array(
+		'page callback' => 'hello_ajaxCallHandler',
+		'access callback' => 'user_access',
+		'access arguments' => array('access content'),
+		'type' => MENU_CALLBACK
+	);
+
+	return $items;
+}
+
+function hello_ajaxCallHandler(){
+	echo "arrived Heree";
+}
+
+/*
+Form Data of showHelloForm
+*/
+
+function hello_showHelloForm(){
+
+	$form = array();
+	
+	$form ['name'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Please Enter your Form'
+	);
+
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => 'submit'
+	);
+
+	$form['#submit'][] = 'hello_showHelloForm_submit';
+	
+	/*Form with Ajax Button*/
+	$form['#suffix'] = '<input type="button" id="submitAjaxButton" value="Submit with Ajax" /> <br />
+	<div id="message-display-area"></div>';
+
+
+	drupal_add_js(drupal_get_path('module','hello')."/hello.js");
+	return $form;
+
+}
+
+/*
+submit function
+*/
+
+function hello_showHelloForm_submit($form,&$form_state){
+
+
+	if ($form_state['values']['name']==""){
+		form_set_error('name','name is required');
+	}else{
+		drupal_set_message ('arrived here '.$form_state['values']['name']);
+	}
+}
+?>

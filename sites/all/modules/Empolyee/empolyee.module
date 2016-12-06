@@ -1,0 +1,98 @@
+<?php
+
+static $all_empolyees;
+/*hook_init*/
+function empolyee_init(){
+	drupal_set_message("Welcome in Drupal Modules");
+}
+function get_All_Empolyess(){
+	return $result = Database::getConnection()->query("SELECT * FROM {node}");
+}
+/*hook_menu*/
+function empolyee_menu(){
+
+
+
+	$items = array();
+//	http://localhost/drupal-7.52/?q=empolyeepage
+	$items['empolyeepage'] = array(
+		'title' => 'my empolyees Page',
+		'description' => 'Description of empolyees Page',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('empolyee_showempolyees'),
+		'access callback' => 'user_access',
+		'access arguments' => array('access content'),
+		'type' => MENU_NORMAL_ITEM
+	);
+
+
+	return $items;
+}
+
+function empolyee_showempolyees(){
+
+	$result = db_query("select title,field_job_value,field_age_value from node as n
+						INNER JOIN field_data_field_job as j
+						ON n.nid = j.entity_id
+						INNER JOIN field_data_field_age as a
+						ON j.entity_id = a.entity_id");
+
+	$header = array("Name","Job","Age");
+	foreach ($result as $res){
+		$rows [] =array(
+			$res->title,
+			$res->field_job_value,
+			$res->field_age_value
+		);
+	}
+	$output = theme('table',array('header'=>$header,'rows'=>$rows));
+	return $output;
+}
+//function empolyee_ajaxCallHandler(){
+//	echo "arrived Heree";
+//}
+
+/*
+Form Data of showempolyeeForm
+*/
+
+//function empolyee_showempolyeeForm(){
+//
+//	$form = array();
+//
+//	$form ['name'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Please Enter your Form'
+//	);
+//
+//	$form['submit'] = array(
+//		'#type' => 'submit',
+//		'#value' => 'submit'
+//	);
+
+//	$form['#submit'][] = 'empolyee_showempolyeeForm_submit';
+//
+//	/*Form with Ajax Button*/
+//	$form['#suffix'] = '<input type="button" id="submitAjaxButton" value="Submit with Ajax" /> <br />
+//	<div id="message-display-area"></div>';
+//
+//
+//	drupal_add_js(drupal_get_path('module','empolyee')."/empolyee.js");
+//	return $form;
+
+//}
+
+/*
+submit function
+*/
+
+//function empolyee_showempolyeeForm_submit($form,&$form_state){
+
+
+//	if ($form_state['values']['name']==""){
+//		form_set_error('name','name is required');
+//	}else{
+//		drupal_set_message ('arrived here '.$form_state['values']['name']);
+//	}
+//}
+?>
