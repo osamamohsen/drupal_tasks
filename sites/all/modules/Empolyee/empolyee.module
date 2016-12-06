@@ -5,9 +5,9 @@ static $all_empolyees;
 function empolyee_init(){
 //	drupal_set_message("Welcome in Drupal Modules");
 }
-function get_All_Empolyess(){
-	return $result = Database::getConnection()->query("SELECT * FROM {node}");
-}
+//function get_All_Empolyess(){
+//	return $result = Database::getConnection()->query("SELECT * FROM {node}");
+//}
 /*hook_menu*/
 function empolyee_menu(){
 
@@ -25,18 +25,50 @@ function empolyee_menu(){
 		'type' => MENU_NORMAL_ITEM
 	);
 
+	$items['customerpage'] = array(
+		'title' => 'my customer Page',
+		'description' => 'Description of customers Page',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('empolyee_showcustomer'),
+		'access callback' => 'user_access',
+		'access arguments' => array('access content'),
+		'type' => MENU_NORMAL_ITEM
+	);
+
 
 	return $items;
 }
 
+
+function empolyee_showcustomer(){
+	$form = array();
+	$result = db_query("select title,field_phone_value,field_address_value from node as n
+						INNER JOIN field_data_field_phone as j
+						ON n.nid = j.entity_id
+						INNER JOIN field_data_field_address as a
+						ON j.entity_id = a.entity_id WHERE n.type = 'customer'");
+	$header = array("Name","Address","Phone");
+	foreach ($result as $res){
+		$rows [] =array(
+			$res->title,
+			$res->field_address_value,
+			$res->field_phone_value
+		);
+	}
+	$output = theme('table',array('header'=>$header,'rows'=>$rows));
+	$form['#suffix'] = "<div>$output</div>";
+	return $form;
+}
+
 function empolyee_showempolyees(){
+
 
 	$form = array();
 	$result = db_query("select title,field_job_value,field_age_value from node as n
 						INNER JOIN field_data_field_job as j
 						ON n.nid = j.entity_id
 						INNER JOIN field_data_field_age as a
-						ON j.entity_id = a.entity_id");
+						ON j.entity_id = a.entity_id WHERE n.type = 'empolyee'");
 	if($result->rowCount()>0){
 
 		$header = array("Name","Job","Age");
