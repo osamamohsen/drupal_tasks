@@ -31,6 +31,7 @@ function empolyee_menu(){
 
 function empolyee_showempolyees(){
 
+	$form = array();
 	$result = db_query("select title,field_job_value,field_age_value from node as n
 						INNER JOIN field_data_field_job as j
 						ON n.nid = j.entity_id
@@ -47,7 +48,9 @@ function empolyee_showempolyees(){
 			);
 		}
 		$output = theme('table',array('header'=>$header,'rows'=>$rows));
-		echo $output;
+		$form['#suffix'] = "<div>$output</div>";
+		return $form;
+//		echo $output;
 	}else{
 		drupal_set_message("No Empolyees in your Company");
 	}
