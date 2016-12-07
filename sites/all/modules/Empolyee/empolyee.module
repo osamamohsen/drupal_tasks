@@ -1,9 +1,13 @@
 <?php
 
+include_once 'Empolyee_Testing.php';
+
 static $all_empolyees;
 /*hook_init*/
 function empolyee_init(){
-//	drupal_set_message("Welcome in Drupal Modules");
+	$empolyee = new Empolyee_Testing("osama","mohsen");
+
+	drupal_set_message($empolyee->getName());
 }
 //function get_All_Empolyess(){
 //	return $result = Database::getConnection()->query("SELECT * FROM {node}");
@@ -25,6 +29,7 @@ function empolyee_menu(){
 		'type' => MENU_NORMAL_ITEM
 	);
 
+
 	$items['customerpage'] = array(
 		'title' => 'my customer Page',
 		'description' => 'Description of customers Page',
@@ -35,6 +40,16 @@ function empolyee_menu(){
 		'type' => MENU_NORMAL_ITEM
 	);
 
+
+	$items['empolyeedepartDev'] = array(
+		'title' => 'Development Empolyee',
+		'description' => 'Description of empolyees Page',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('empolyee_showempolyees'),
+		'access callback' => 'user_access',
+		'access arguments' => array('access content'),
+		'type' => MENU_NORMAL_ITEM
+	);
 
 	return $items;
 }
