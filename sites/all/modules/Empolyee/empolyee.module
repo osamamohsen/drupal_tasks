@@ -1,13 +1,13 @@
 <?php
 
-include_once 'Empolyee_Testing.php';
+include 'Empolyee_Jobs.php';
 
 static $all_empolyees;
 /*hook_init*/
 function empolyee_init(){
-	$empolyee = new Empolyee_Testing("osama","mohsen");
+//	$empolyee = new Empolyee_Testing("osama","mohsen");
 
-	drupal_set_message($empolyee->getName());
+//	drupal_set_message($empolyee->getName()+","+$empolyee->getPassword());
 }
 //function get_All_Empolyess(){
 //	return $result = Database::getConnection()->query("SELECT * FROM {node}");
@@ -15,7 +15,7 @@ function empolyee_init(){
 /*hook_menu*/
 function empolyee_menu(){
 
-
+	$empolyee = new Empolyee_Jobs();
 
 	$items = array();
 //	http://localhost/drupal-7.52/?q=empolyeepage
@@ -41,11 +41,11 @@ function empolyee_menu(){
 	);
 
 
-	$items['empolyeedepartDev'] = array(
-		'title' => 'Development Empolyee',
-		'description' => 'Description of empolyees Page',
+	$items['customerpageUpdatge'] = array(
+		'title' => 'Development Empolyee Updated',
+		'description' => 'Description of empolyees Updated Page',
 		'page callback' => 'drupal_get_form',
-		'page arguments' => array('empolyee_showempolyees'),
+		'page arguments' => array('empolyee_showcustomerUpdate'),
 		'access callback' => 'user_access',
 		'access arguments' => array('access content'),
 		'type' => MENU_NORMAL_ITEM
@@ -56,12 +56,14 @@ function empolyee_menu(){
 
 
 function empolyee_showcustomer(){
+
 	$form = array();
 	$result = db_query("select title,field_phone_value,field_address_value from node as n
 						INNER JOIN field_data_field_phone as j
 						ON n.nid = j.entity_id
 						INNER JOIN field_data_field_address as a
 						ON j.entity_id = a.entity_id WHERE n.type = 'customer'");
+
 	$header = array("Name","Address","Phone");
 	foreach ($result as $res){
 		$rows [] =array(
@@ -72,6 +74,62 @@ function empolyee_showcustomer(){
 	}
 	$output = theme('table',array('header'=>$header,'rows'=>$rows));
 	$form['#suffix'] = "<div>$output</div>";
+	return $form;
+}
+
+function empolyee_showcustomerUpdate(){
+
+	$form = array();
+	$entity = new EntityFieldQuery();
+	$result = $entity->entityCondition('entity_type', 'node')
+				->propertyCondition('type','customer')->execute();
+	if(isset($result['node'])){
+		$keys = array();
+		foreach ($result['node'] as $res){
+			$keys []= $res->nid;
+		}
+
+		echo "Done";
+		$news_items_nids = array_keys($keys);
+//		print ($news_items_nids);
+		echo "<br />";
+		$news_items = entity_load('node', $news_items_nids);
+
+		$phones = $entity->entityCondition('entity_type','node')
+			->propertyCondition('entity_id','field_data_field_phone')->execute();
+//			->entityCondition('entity_id',$keys,'IN')->execute();
+//			->propertyCondition('entity_id',$keys,'=')->execute();
+		if(isset($phones)){
+			foreach ($phones['field_data_field_phone'] as $res)
+				echo $res->entity_id;
+		}else {
+			echo "not Done";
+		}
+//		$news_items->tostring();
+//		echo count($result['node']);
+//		dd($result);
+//		foreach ($result as $res){
+//			echo $res->
+//		}
+	}
+	else echo "not Done";
+//	$result = db_query("select * from node WHERE n.type = 'customer'");
+
+//	foreach ($result as $res){
+//
+//	}
+//	$result = entity_load('node',$result,'node.type=customer','false');
+//
+//	$header = array("Name","Address","Phone");
+//	foreach ($result as $res){
+//		$rows [] =array(
+//			$res->title,
+//			$res->field_address_value,
+//			$res->field_phone_value
+//		);
+//	}
+//	$output = theme('table',array('header'=>$header,'rows'=>$rows));
+//	$form['#suffix'] = "<div>$output</div>";
 	return $form;
 }
 
@@ -101,6 +159,11 @@ function empolyee_showempolyees(){
 	}else{
 		drupal_set_message("No Empolyees in your Company");
 	}
+}
+
+function empolyee_showmydepart(){
+
+//	return
 }
 //function empolyee_ajaxCallHandler(){
 //	echo "arrived Heree";
