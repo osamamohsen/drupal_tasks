@@ -9,10 +9,53 @@ function empolyee_init(){
 
 //	drupal_set_message($empolyee->getName()+","+$empolyee->getPassword());
 }
-//function get_All_Empolyess(){
-//	return $result = Database::getConnection()->query("SELECT * FROM {node}");
-//}
-/*hook_menu*/
+
+
+/**
+ * Hook Form Alter
+ */
+function empolyee_form_alter(&$form, &$form_state, $form_id) {
+
+//	if(isset()){
+//
+//	}
+//	var_dump($form);
+	if(isset($_POST["op"]))
+	{
+//		echo "<pre>";
+////		$form_state['input']['suffix'];
+//		print_r($form_state);
+//		exit;
+	}
+	if($form_id == "empolyee_node_form"){
+		/*edit in Existing Field*/
+		$form['title']['#title'] = t("your first name");
+		$form['field_job']['und'][0]['value']['#title'] = t("your JOB");
+		/*add an new text item*/
+		$form['suffix'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Address created by modules'),
+			'#size' => 60,
+			'#maxlength' => 255,
+			'#description' => t('A description in address field'),
+			'#required' => TRUE,
+		);
+		$form['#submit'][] = 'after_submit';
+	}
+//	if($form_state['submitted'])
+//	exit;
+}
+
+function empolyee_update_7002()
+{
+	$spec = array(
+		'type' => 'varchar',
+		'description' => "address addeded by Empolyee content type",
+		'length' => 20,
+		'not null' => FALSE,
+	);
+	db_add_field('node', 'address', $spec);
+}
 function empolyee_menu(){
 
 	$empolyee = new Empolyee_Jobs();
@@ -77,6 +120,15 @@ function empolyee_showcustomer(){
 	return $form;
 }
 
+function load_entity_load($news_items,$field_name){
+	$mykeys = array();
+	foreach ($news_items as $item){
+		foreach ($item->$field_name as $field)
+			$mykeys []= $field[0]['value']."<br />";
+	}
+	return $mykeys;
+}
+
 function empolyee_showcustomerUpdate(){
 
 	$form = array();
@@ -88,48 +140,24 @@ function empolyee_showcustomerUpdate(){
 		foreach ($result['node'] as $res){
 			$keys []= $res->nid;
 		}
-
-		echo "Done";
-		$news_items_nids = array_keys($keys);
-//		print ($news_items_nids);
-		echo "<br />";
-		$news_items = entity_load('node', $news_items_nids);
-
-		$phones = $entity->entityCondition('entity_type','node')
-			->propertyCondition('entity_id','field_data_field_phone')->execute();
-//			->entityCondition('entity_id',$keys,'IN')->execute();
-//			->propertyCondition('entity_id',$keys,'=')->execute();
-		if(isset($phones)){
-			foreach ($phones['field_data_field_phone'] as $res)
-				echo $res->entity_id;
-		}else {
-			echo "not Done";
+		$news_items = entity_load('node', $keys);
+		$table = array();
+		$addresses = load_entity_load($news_items,"field_address");
+		$phones =load_entity_load($news_items,"field_phone");
+		$counter = 0;
+		foreach ($news_items as $item){
+			$table[] = array(
+				$item->title,
+				$addresses[$counter],
+				$phones[$counter],
+			);
+			$counter++;
 		}
-//		$news_items->tostring();
-//		echo count($result['node']);
-//		dd($result);
-//		foreach ($result as $res){
-//			echo $res->
-//		}
+		$header = array("Name","Address","Phone");
+		$output = theme('table',array('header'=>$header,'rows'=>$table));
+		$form['#suffix'] = "<div>$output</div>";
 	}
-	else echo "not Done";
-//	$result = db_query("select * from node WHERE n.type = 'customer'");
-
-//	foreach ($result as $res){
-//
-//	}
-//	$result = entity_load('node',$result,'node.type=customer','false');
-//
-//	$header = array("Name","Address","Phone");
-//	foreach ($result as $res){
-//		$rows [] =array(
-//			$res->title,
-//			$res->field_address_value,
-//			$res->field_phone_value
-//		);
-//	}
-//	$output = theme('table',array('header'=>$header,'rows'=>$rows));
-//	$form['#suffix'] = "<div>$output</div>";
+	else drupal_set_message("not found any users");
 	return $form;
 }
 
@@ -212,4 +240,7 @@ submit function
 //		drupal_set_message ('arrived here '.$form_state['values']['name']);
 //	}
 //}
-?>
+
+function after_submit(&$form, &$form_state) {
+	die('after submit function');
+}

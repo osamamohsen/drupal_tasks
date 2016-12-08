@@ -14,7 +14,7 @@
  * perspective and the callback system that Drupal uses to respond to URLs
  * passed from the browser. For this reason, a good understanding of the
  * menu system is fundamental to the creation of complex modules. As a note,
- * this is related to, but separate from menu.module, which allows menus
+ * this is related to, but separate from menu_magic.module, which allows menus
  * (which in this context are hierarchical lists of links) to be customized from
  * the Drupal administrative interface.
  *

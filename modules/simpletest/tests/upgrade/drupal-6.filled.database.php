@@ -11990,7 +11990,7 @@ db_insert('system')->fields(array(
   'info' => 'a:8:{s:4:"name";s:6:"Locale";s:11:"description";s:119:"Adds language handling functionality and enables the translation of the user interface to languages other than English.";s:7:"package";s:15:"Core - optional";s:7:"version";s:8:"6.20-dev";s:4:"core";s:3:"6.x";s:12:"dependencies";a:0:{}s:10:"dependents";a:0:{}s:3:"php";s:5:"4.3.5";}',
 ))
 ->values(array(
-  'filename' => 'modules/menu/menu.module',
+  'filename' => 'modules/menu/menu_magic.module',
   'name' => 'menu',
   'type' => 'module',
   'owner' => '',
